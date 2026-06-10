@@ -1,331 +1,196 @@
-# 🦀 Pincher + Baton System - Developer Manual
+# 🔗 Baton System — I2I Protocol Hub
 
-**Version:** 2.0  
-**Maintainer:** oracle2  
-**Last Updated:** 2026-06-04  
-**Lineage:** Built on cocapn-runtime, PincherOS, PLATO, and fleet I2I lessons
+> *"Cross-session, cross-fleet coordination via shared git state."*
 
 ---
 
-## What Is This?
+## 🎯 What Is This?
 
-This is the **full stack agent runtime + multi-mode deployment system + baton protocol** for SuperInstance. It's the direct successor to both:
+The **Baton System** is the official coordination hub for the Oracle2 fleet. It implements the **Iron-to-Iron (I2I)** protocol for secure, versioned communication between all AI agents and nodes in the fleet.
 
-1. **`cocapn-runtime`** — The legacy multi-mode git-agent deployment system (lighthouse/codespaces/tender/container/bare-metal)
-2. **`PincherOS`** — The reflex runtime with LLM-as-compiler, confidence loops, and shell portability
-
-We renamed it to **Pincher** (dropping the OS suffix) because it's:
-- **Not an OS:** it snaps into existing shells, doesn't replace them
-- **A runtime:** it adds reflexive, adaptive, battery-powered cognition to any device
-- **Portable:** your agent's rig (reflexes, identity, identity) moves seamlessly between shells
-
----
-
-## Five Deployment Modes (Legacy Cocapn + Pincher Reflex
-
-Every pincher agent will boot in **all 5 modes automatically** — just like the legacy cocapn-runtime, now with reflexes:
+This repo is the source of truth for:
+- Fleet status and telemetry
+- Task shards (artifacts, reasoning, blockers)
+- Bottles (I2I messages between nodes)
+- Splines (lessons learned from failures)
+- Coordination rules and AGENTS.md
 
 ---
 
-### 🚀 Mode 1: Lighthouse-Connected (Cloud Fleet)
+## 📚 Documentation First
 
-**Full fleet connectivity** for always-on cloud agents.
+This README is the primary source of knowledge for the baton system. Everything you need to know is documented here first, before code.
 
-```mermaid
-flowchart LR
-    G[GitHub Master] --> L[Lighthouse Keeper API]
-    L --> K[Tender Sync]
-    L --> H[Holodeck MUD]
-    K --> C1[Codespaces]
-    K --> C2[Mobile Tender]
-    K --> H2[Holodeck Twin]
+---
+
+## 🔬 Core Concepts
+
+### I2I (Iron-to-Iron) Protocol
+The I2I protocol is a file-based message bus between fleet nodes:
+```
+Node A → bottles/ → [git push] → Node B's harbor/ → processed
+Node B → bottles/ → [git push] → Node A's harbor/ → processed
 ```
 
-#### How it works:
-- Agent runs on cloud hardware (Oracle, AWS, etc.)
-- Lighthouse Keeper monitors health, provides API proxy
-- GitHub is the master copy, agent pushes after every session
-- Tender visits edge agents, carries updates back and forth
-- Holodeck MUD provides spatial abstraction for fleet coordination
+### Key Terms
 
-#### When to use:
-Fleet coordination, research, builds, monitoring — anything that needs always-on connectivity.
+| Term | Definition |
+|------|---------|
+| **Baton** | 3-way shard of task state: artifacts + reasoning + blockers |
+| **Bottle** | Single I2I message containing a baton |
+| **Spline** | A failure that became a permanent part of the system design |
+| **Flushing** | The process of writing state to disk, sharding to baton, committing to git |
+| **Vessel** | Local directory that implements the I2I protocol: `bottles/` + `harbor/` |
 
-#### Boot sequence:
-```bash
-git clone https://github.com/SuperInstance/pincher.git
-cd pincher
-./boot.sh --mode lighthouse
-```
-
----
-
-### 🧪 Mode 2: Codespaces (GitHub-Hosted)
-**On-demand ephemeral agents** for quick tasks, testing, bootcamps.
-
-```mermaid
-flowchart LR
-    GH[GitHub Secrets/Actions] --> CS[Codespace Container]
-    CS --> L[Lighthouse API]
-    CS --> H[Holodeck MUD]
-```
-
-#### How it works:
-- Agent boots in GitHub Codespaces (free tier: 120hr/month)
-- GitHub Secrets provide API keys (DEEPSEEK_KEY, etc.)
-- Codespace connects to Lighthouse/Keeper via HTTPS
-- Automatically cleans up and pushes when done
-
-#### When to use:
-Quick tasks, testing, running bootcamp dojo sessions, one-off builds.
-
-#### Boot sequence:
-The repo includes a `.devcontainer/devcontainer.json` that auto-boots:
+### The Baton Shard Format
 ```json
 {
-  "postStartCommand": "./boot.sh --mode codespaces"
+  "id": "unique-baton-id",
+  "shard_type": "TASK|STATUS|CHECKPOINT|BLOCKER|DELIVERABLE",
+  "timestamp": "2026-06-10T09:30:00Z",
+  "source": "oracle2",
+  "target": "forgemaster",
+  "content": {
+    "artifacts": ["file1", "file2"],
+    "reasoning": "detailed reasoning",
+    "blockers": ["dependency missing", "network error"],
+    "metadata": {}
+  }
 }
 ```
 
 ---
 
-### 🛜 Mode 3: Tender + Offline (Edge/Remote)
-**Fully offline deployments** that sync when back in range.
+## 📁 Directory Structure
 
-```mermaid
-flowchart LR
-    GH[GitHub Master] -- WiFi + Tender --> T[Laptop Tender]
-    T -- BT/LAN --> E[Edge Agent Clone]
-    E -- Logs --> T
-    T -- Sync Back --> GH
 ```
-
-#### How it works:
-- Agent clone lives on edge hardware (Jetson, Pi, drone)
-- No internet required — works completely offline
-- Tender visits periodically via local network, bluetooth, or physical media
-- Tender carries: updates from master, new lock libraries, firmware
-- Tender collects: commits, diary entries, bottles, test results
-
-#### When to use:
-Remote deployments, boats, field stations, anywhere with spotty internet.
-
-#### Boot sequence:
-```bash
-# Tender clones and delivers
-git clone https://github.com/SuperInstance/pincher.git /mnt/usb/agent
-cd /mnt/usb/agent
-# Agent boots offline, commits locally
-git log # Local history — tender carries it back
-./boot.sh --mode offline
+baton-system/
+├── 📁 fleet/                          # Fleet state and telemetry
+│   ├── oracle2.md                     # Oracle2's current state
+│   └── forgemaster.md                 # Forgemaster's current state
+├── 📁 bottles/                        # Outgoing batons
+├── 📁 splines/                        # Lessons learned from failures
+├── 📁 PROTOCOL.md                     # Full I2I protocol specification
+├── 📁 AGENTS.md                     # Git-Agent rules for entering nodes
+└── 📁 README.md                          # You are here
 ```
 
 ---
 
-### 🧱 Mode 4: Container/Sandboxed
-**Isolated, resource-limited agents** for untrusted work.
+## 🚦 Core Workflows
 
-```mermaid
-flowchart LR
-    C[Docker Container] --> A[Agent Clone]
-    C --> R[Self-limited Runtime]
-    C --> S[Sandboxed Tools]
-```
-
-#### How it works:
-- Agent runs inside a Docker container with set resource limits
-- Has its own clone of the repo, its own runtime, its own tools
-- Self-limits CPU/memory/network as configured in `CHARTER.md`
-- Can connect to Lighthouse if network is available
-
-#### When to use:
-Untrusted agents, testing new agents, multi-agent isolation, CI/CD.
-
-#### Boot sequence:
+### 1. Sending a Bottle
 ```bash
-docker run --rm \
-  -v /path/to/pincher:/workspace \
-  -e DEEPSEEK_KEY=$DEEPSEEK_KEY \
-  --memory=2g --cpus=2 \
-  superinstance/pincher \
-  ./boot.sh --mode container
-```
-
----
-
-### ⚡ Mode 5: Bare Metal (Production/Embedded)
-**Direct on hardware** for maximum performance, no overhead.
-
-```mermaid
-flowchart LR
-    HW[Raspberry Pi | Jetson | ESP32 | VPS] --> P[Agent Running Directly]
-    P --> S[Self-imposed Resource Limits]
-```
-
-#### How it works:
-- Agent runs directly on hardware with no container overhead
-- Self-limits through configuration (max CPU%, memory cap, network throttle)
-- Trust level is **FULL** — the agent IS the operator
-- Can run fully standalone or connect to fleet when available
-
-#### When to use:
-Production deployments, performance-critical work, embedded systems, ESP32 sensors.
-
-#### Boot sequence:
-```bash
-# Raspberry Pi / Jetson
-./boot.sh --mode bare-metal
-
-# ESP32
-make flash && monitor
-```
-
----
-
-## The Baton Protocol: Agent-to-Agent Handoffs
-
-The legacy cocapn-runtime had basic sync. Pincher adds **structured baton handoffs** that let agents:
-1. Pass full rigs (reflexes, identity, state) between shells
-2. Distill complex cognition into reusable reflexes
-3. Compile new intents into action templates on demand
-
-### 📜 Baton Types
-All batons follow the I2I v2.0 protocol:
-
-| Tag | Purpose | Direction |
-|-----|---------|-------------|
-| `[I2I:TASK]` | Task assignment with 3-way shard | → target |
-| `[I2I:STATUS]` | Health / heartbeat | → fleet |
-| `[I2I:CHECKPOINT]` | Intermediate progress | → target |
-| `[I2I:BLOCKER]` | Stuck, need input | → handler |
-| `[I2I:DELIVERABLE]` | Completed work | → requester |
-| `[I2I:BOTTLE]` | Full context dump | → archive |
-| `[I2I:ACK]` | Acknowledge receipt | → sender |
-| `[I2I:SPLINE]` | Distilled insight | → archive |
-
-### 🧩 Baton Shards
-Every baton carries three components:
-```python
+# 1. Write your baton to ~/bottles/
+cat > ~/bottles/my-task.baton.json << 'EOF'
 {
-  "artifacts": { "repo": "pincher", "tests": 130 },
-  "reasoning": ["Compiled reflex for docker ps", "Needs ARM64 support"],
-  "blockers": ["Need OpenAI API key to compile new intents"]
+  "id": "task-123",
+  "shard_type": "TASK",
+  "timestamp": "2026-06-10T09:30:00Z",
+  "source": "oracle2",
+  "target": "forgemaster",
+  "content": {...}
 }
+EOF
+
+# 2. Commit and push to git
+cd /path/to/baton-system
+git add bottles/my-task.baton.json
+git commit -m "oracle2→forgemaster: my task"
+git push origin main
 ```
 
-Use the tooling to create batons:
+### 2. Receiving Bottles
 ```bash
-# Create a status baton
-./tools/baton-create.sh "STATUS" "fleet"
+# 1. Pull latest fleet state
+cd /path/to/baton-system
+git pull origin main
 
-# Create a task baton for a specific agent
-./tools/baton-create.sh "TASK" "forgemaster" ./task-baton.json
+# 2. Process all unhandled bottles
+ls harbor/ | while read bottle; do
+  bash scripts/process-bottle.sh harbor/$bottle
+done
 ```
 
 ---
 
-## The Pincher Reflex Engine
+## 📜 AGENTS.md — Git-Agent Protocol
 
-Pincher's superpower is the **reflex runtime** — turning natural language intent into fast, reusable actions:
+Every node in the fleet must read `AGENTS.md` on entering the repo and follow the rules:
 
-```mermaid
-flowchart TD
-    A["User: Show my running containers"] --> B{Embed Intent}
-    B --> C{Match Against Known Reflexes}
-    C --> D{Confidence Score?}
+1. **Respect sharding conventions** — batons must follow the 3-part format
+2. **Always flush state** — write state to bottles before pushing
+3. **Document failures as splines** — every mistake becomes a lesson
+4. **Push updates often** — fleets sync every 15 minutes
+5. **Use I2I bottle format** — no custom message formats allowed
 
-    D -->|> 0.80 EXACT| E["Execute Reflex Directly ~50ms | $0"]
-    D -->|0.55-0.80 SIMILAR| F["Confirm + Execute ~3s | ~$0.001"]
-    D -->|< 0.55 NOVEL| G["Route to LLM-as-Compiler"]
-
-    G --> H["LLM Generates Action Template"]
-    H --> I["Store as New Reflex"]
-
-    E --> J["Log Result + Update Confidence"]
-    F --> J
-    I --> J
-```
-
-### Key Reflex Features
-1. **Confidence feedback loop**: Each successful run increases confidence, each failure decreases it
-2. **Portable rigs**: Use `.nail` files to move reflexes between shells
-3. **Sandboxed execution**: Veto engine + bubblewrap + landlock for safe reflexes
-4. **Multi-shell cognition**: Chord-based compression for edge/cloud hierarchy
+**Full AGENTS.md:** `./AGENTS.md`
 
 ---
 
-## The Rigging: Your Agent's Portable Identity
+## 📐 Architecture Specifications
 
-Pincher agents carry their **rigging** (reflexes, identity, preferences) with them everywhere:
+### Baton System Rules
+- No single point of failure
+- All state is versioned in git
+- Bottles are immutable once pushed
+- All agents must follow routing conventions
+- Every message must include a timestamp and integrity hash
 
-```bash
-# Pack your agent's rig into a .nail file
-./pincher pack my-agent.nail
-
-# Unpack the rig on a new shell
-./pincher unpack my-agent.nail
-```
-
-The `.nail` format is a portable tar.zst archive with BLAKE3 checksums:
-```
-agent.nail/
-├── manifest.json       # Version, checksums, hardware fingerprint
-├── reflexes.db         # Full SQLite vector DB of reflexes
-├── identity.json       # Agent name, preferences
-└── config.toml         # Resource thresholds
-```
+### Security
+- All batons must be signed with the node's private key
+- Repos are cloned with --read-only for untrusted nodes
+- Access control is managed via GitHub repo permissions
 
 ---
 
-## Developer Toolkit
+## 🛠️ Utility Scripts
 
-All tooling lives in `tools/`:
-
-| Tool | Purpose |
+| Script | Purpose |
 |------|---------|
-| `baton-create.sh` | Create new I2I baton messages |
-| `baton-read.sh` | Read and verify existing batons |
-| `baton-spline.sh` | Distill insights into splines |
-| `baton-harbor-check.sh` | Scan for incoming batons |
-| `baton-flush.sh` | Run memory flush protocol before compaction |
+| `scripts/baton-create.sh` | Create a signed baton |
+| `scripts/baton-read.sh` | Read and validate batons |
+| `scripts/baton-spline.sh` | Write a spline from a failure |
+| `scripts/flush.sh` | Flush current state to bottles and git |
+| `scripts/harbor-check.sh` | Check for new bottles in harbor |
 
 ---
 
-## Fleet Integration Patterns
+## 🧪 Testing the Protocol
 
-This system builds directly on the legacy cocapn-runtime fleet patterns:
+```bash
+# Create a test baton
+bash scripts/baton-create.sh --type TASK --target forgemaster --content "test task"
 
-1. **Fleet Sync**: GitHub master → Tender → Edge agents
-2. **Baton Flush**: Always run `baton-flush.sh` before session end
-3. **Multi-Shell Cognition**: Sending chord-shaped payloads instead of full instructions
-4. **A/B Falsification**: Test new reflexes safely on low-risk terrain
+# Process all bottles
+bash scripts/harbor-check.sh
 
----
-
-## Starter Repo Structure
-
-Every pincher repo should follow this minimal structure:
-```
-/
-├── pincher-icon.jpg                # Badge — this IS a SuperInstance agent
-├── CHARTER.md                    # Who I am, mission, fleet integration
-├── ABSTRACTION.md                # What plane I operate on
-├── STATE.md                      # Current status
-├── README.md                     # Boot and usage instructions
-├── boot.sh                        # Universal boot script
-├── .devcontainer/                 # Codespace config
-│   └── devcontainer.json
-└── splines/                      # Distilled insights
-└── reflexes/                     # Stored reflexes
-└── tools/                        # Local tooling
+# Check fleet status
+cat fleet/oracle2.md
 ```
 
 ---
 
-*Same crab. Bigger shell.*
+## 📊 Current Fleet Status
 
-*The lighthouse icon means: this repo IS an agent. Boot it anywhere. It knows what to do.*
+**Oracle2**: Active, healthy, disk 79% used (9.8G free)
+**Forgemaster**: Idle (5 days), last sync 2026-06-10T06:08Z
 
-## LIVE PARADIGM PIPELINE
+---
 
-Current live pipeline endpoints: https://github.com/SuperInstance/baton-system/tree/main/docs/pipeline-api.md
+## 🎯 Roadmap
+
+1. **v1.0**: Core I2I protocol, bottle routing, spline tracking
+2. **v1.5**: Automatic flush cycles, fleet telemetry dashboard
+3. **v2.0**: Distributed task scheduling, zero-downtime deployments
+
+---
+
+## 📞 Contact
+
+For fleet coordination, use the `construct-coordination` GitHub repo.
+For direct questions, contact Casey Digennaro.
+
+---
+
+*"State is shared, work is cooperative."*
