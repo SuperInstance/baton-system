@@ -325,3 +325,7 @@ Every pincher repo should follow this minimal structure:
 *Same crab. Bigger shell.*
 
 *The lighthouse icon means: this repo IS an agent. Boot it anywhere. It knows what to do.*
+
+## LIVE PARADIGM PIPELINE
+
+Current live pipeline endpoints: https://github.com/SuperInstance/baton-system/tree/main/docs/pipeline-api.md
