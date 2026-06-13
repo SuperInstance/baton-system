@@ -49,3 +49,5 @@ No work happens without all three legs. This is how we get object permanence.
 - `PROTOCOL.md` — the full I2I baton protocol
 - `splines/` — stored insights
 - `fleet/` — per-component state
+- `docs/GC_AGENTS.md` — fleet-wide GC specification
+- `docs/gc-intelligent-README.md` — self-aware GC system architecture
