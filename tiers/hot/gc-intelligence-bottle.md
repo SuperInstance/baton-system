@@ -2,19 +2,20 @@
 
 **Source:** Oracle2 gc-intelligent.sh  
 **Type:** GC_SYNC  
-**Status:** status
+**Status:** execute
 
 ## State
 ```
-/dev/sda1        45G   41G  4.3G  91% /
-Ledger: 32 entries
+/dev/sda1        45G   41G  4.7G  90% /
+Ledger: 37 entries
 ``$
 
 ## Key Patterns
-- node-compile-cache: 2x
+- node-compile-cache: 3x
 - cycle-start---status: 2x
 - cycle-start---dry-run: 1x
 - package-cache: 1x
+- cycle-end---status: 1x
 
 ## Recommendation
 All fleet nodes should adopt self-auditing GC:
