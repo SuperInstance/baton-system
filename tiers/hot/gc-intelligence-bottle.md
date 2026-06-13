@@ -2,12 +2,12 @@
 
 **Source:** Oracle2 gc-intelligent.sh v2  
 **Type:** GC_SYNC  
-**Status:** execute
+**Status:** deep
 
 ## State
 ```
 /dev/sda1        45G   41G  4.8G  90% /
-Ledger: 45 entries
+Ledger: 48 entries
 PID aggression: 5.0
 ```
 
