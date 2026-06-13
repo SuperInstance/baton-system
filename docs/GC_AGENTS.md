@@ -112,3 +112,29 @@ All nodes log to `data/gc-ledger/ledger.jsonl` with this schema:
 - **No self-audit** — GC that grows unbounded logs becomes the problem it was supposed to solve
 - **Blind threshold** — fixed 15% threshold is fine for alerting, but GC should adapt to the actual burn rate
 - **No fleet propagation** — each node learning independently means repeating mistakes
+
+## Repository Structure
+
+| Path | Purpose |
+|------|---------|
+| `docs/GC_AGENTS.md` | This file — fleet specification |
+| `docs/gc-intelligent-README.md` | System architecture and quick-start |
+| `docs/CROSS_DOMAIN_SYNERGY.md` | Cross-linking to ternary-gc, ternary-pid |
+| `tiers/hot/gc-intelligence-bottle.md` | Latest GC cycle intelligence bottle |
+
+## Related Systems (Cross-Domain Synergy)
+
+The fleet GC operates at the **host-metal layer**. The same ternary decision theory
+appears in two other crates:
+
+| Domain | Crate | State Space |
+|--------|-------|-------------|
+| GPU memory GC | [`ternary-gc`](https://github.com/SuperInstance/ternary-gc) | {Reachable=+1, MaybeReachable=0, Unreachable=-1} |
+| Process control | [`ternary-pid`](https://github.com/SuperInstance/ternary-pid) | {+1, 0, -1} actuation |
+
+Our compost heap ≈ MaybeReachable (0). Our PID aggression multiplier is a cascade PID.
+See [`CROSS_DOMAIN_SYNERGY.md`](./CROSS_DOMAIN_SYNERGY.md) for the full analysis.
+
+---
+
+*Part of the SuperInstance fleet GC system — connected to the full ternary ecosystem.*
