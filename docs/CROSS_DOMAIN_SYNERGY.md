@@ -112,3 +112,42 @@ the old bash `bc` PID implementation in `gc-intelligent.sh`. The same mathematic
 
 **Location**: `github.com/SuperInstance/gc-pid-bridge`
 **Status**: Green — deployed on Oracle2
+
+---
+
+## Forgemaster Shell Integration (June 14, 2026)
+
+The [Forge master Shell](https://github.com/SuperInstance/forgemaster-shell) defines an agent 
+operating protocol — "the forge never cools" — that is protocol-compatible with the 
+baton I2I system and the GC infrastructure.
+
+### Connection Matrix
+
+| System | Role | Connection |
+|--------|------|------------|
+| **Forgemaster** | Agent protocol | Defines *how* agents work (commit discipline, parallel execution) |
+| **Baton** | Fleet state | Defines *what* agents communicate (typed bottles, I2I) |
+| **GC Intelligent** | Host metal | Defines *where* agents survive (disk health, PID control) |
+| **gc-pid-bridge** | Math layer | Defines *why* (ternary decision theory at all layers) |
+| **cocapn** | Learning | Defines *how agents improve* (tile-based memory, flywheel) |
+
+### What's Connected
+- `forge-apply.sh` (in scripts/) installs the forgemaster protocol and wires it to GC output
+- GC bottles at `tiers/hot/` are forge-compatible (git-committed, evidence-based)
+- `state/.forge/CONTEXT.md` provides cold-start bootstrap for forge-style agents
+
+### Next Integration
+- Cocapn agent trained on GC ledger → learns eviction patterns
+- Ternary-swarm votes on GC PID setpoint adjustments
+- At that point: **the agent both governs and learns from its own survival systems**
+
+### Running
+```bash
+# Apply forgemaster to any workspace
+bash workspace/scripts/forge-apply.sh
+
+# Agent picks up from:
+#   state/.forge/CONTEXT.md  — systems overview
+#   HEARTBEAT.md             — task queue with forge tasks
+#   baton-system/docs/       — fleet state and cross-references
+```
