@@ -151,3 +151,55 @@ bash workspace/scripts/forge-apply.sh
 #   HEARTBEAT.md             — task queue with forge tasks
 #   baton-system/docs/       — fleet state and cross-references
 ```
+
+---
+
+## Ternary GC Advisor Layer (June 14, 2026) — operational
+
+A Python swarm advisor (`scripts/ternary-gc-advisor.py`) that wraps ternary decision
+theory in a lightweight voting layer on top of the existing GC system.
+
+### Architecture
+
+```
+gc-intelligent.sh
+  └── gc-pid-bridge (ternary-pid crate) → PID control
+      └── ternary-gc-advisor.py          ← NEW: swarm votes on policy
+           ├── 9 particles on {-1,0,+1} grid
+           ├── Reads GC ledger (evidence-based)
+           ├── Converges on optimal setpoint/deadband/integral/kd
+           └── Outputs JSON for PID override
+               └── gc-intelligent.sh reads it if available
+```
+
+### What it does
+- Reads the GC ledger (47+ entries as of June 14)
+- Swarm converges on optimal GC parameters
+- Currently recommends: **aggressive (10%) setpoint** — correct for our disk profile
+- Overrides the default 20% setpoint when ledger data supports it
+- No state beyond the ledger; fully stateless on each call
+
+### Connections
+- **cocapn** integration: swarm records decisions as tiles for future learning
+- **ternary-swarm** crate: the Python swarm mirrors the Rust ternary-swarm Boid logic
+- **forgemaster** protocol: advisor runs as a forge task on heartbeat
+- **compost heap**: isomorphic to ternary-gc MaybeReachable (0) — the advisor can 
+  recommend when to sweep it
+
+### Usage
+```bash
+# Train on ledger
+python3 scripts/ternary-gc-advisor.py --train
+
+# Get JSON recommendation (consumed by GC script)
+python3 scripts/ternary-gc-advisor.py --recommend
+
+# Dry run with text output
+python3 scripts/ternary-gc-advisor.py --dry-run
+
+# Continuous monitoring
+python3 scripts/ternary-gc-advisor.py --daemon
+```
+
+### Status
+🟢 Operational — wired into gc-intelligent.sh, auto-detected, no-op if unavailable
