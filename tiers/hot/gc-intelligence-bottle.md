@@ -1,4 +1,4 @@
-# GC Intelligence Bottle — 2026-06-14 01:32 UTC
+# GC Intelligence Bottle — 2026-06-14 01:33 UTC
 
 **Source:** Oracle2 gc-intelligent.sh v2  
 **Type:** GC_SYNC  
@@ -6,8 +6,8 @@
 
 ## State
 ```
-/dev/sda1        45G   40G  5.5G  88% /
-Ledger: 73 entries
+/dev/sda1        45G   40G  5.4G  88% /
+Ledger: 75 entries
 PID aggression: 1.0
 ```
 
