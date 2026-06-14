@@ -101,3 +101,14 @@ Every layer shares the ternary decision space. A disk-pressure event at the meta
 - `ternary-gc` — GPU memory GC crate
 - `ternary-pid` — PID control crate
 - `superinstance-knowledge/mine/fleet-architecture/GRAND_SYNERGY.md` — the vision
+
+---
+
+## Operational Update: gc-pid-bridge (June 14, 2026)
+
+The cross-domain synergy is now operational. `gc-pid-bridge` wraps `ternary-pid` and replaces
+the old bash `bc` PID implementation in `gc-intelligent.sh`. The same mathematical core
+(Kp/Ki/Kd with deadband, derivative filtering, anti-windup) now runs at the host-metal GC layer.
+
+**Location**: `github.com/SuperInstance/gc-pid-bridge`
+**Status**: Green — deployed on Oracle2
