@@ -9,6 +9,8 @@ to find entries, then read full documents here.
 | Document | Description | Last Updated |
 |----------|-------------|--------------|
 | KNOW-THYSELF.md | The KT spec — universal self-modeling engine, dual-output contract, CLI | 2026-06-15 |
+| KNOW-THYSELF-TILE.md | The Pedagogical Frame — TUTOR-style Tiles with sloppy logic + scoring + branching + rooms | 2026-06-15 |
+| KNOW-THYSELF-IDEATION.md | Overnight ideation + pruning pipeline — cheap generation, Vector Twin storage, Wiki filtering | 2026-06-15 |
 | SKDE-ABSTRACTION.md | The O-A-C-G-R loop abstraction (10 sections, 17KB) | 2026-06-15 |
 | META-MIRROR.md | The system reflecting on its own evolution | 2026-06-15 |
 
