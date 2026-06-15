@@ -64,7 +64,42 @@ The narrative compression is where the "knowledge" in "knowledge-distillation"
 lives. A good narrative is a lossy but useful compression of days of
 behavior into a paragraph.
 
-### (next entry to be written by the Meta-Mirror reflection agent)
+### 2026-06-15 18:45 UTC — Know-Thyself is Named
+
+Casey said: "Know-thyself could be the name of the tool that is general
+purpose and harness-able by any agent or agents."
+
+This is it. The SKDE abstraction is no longer unnamed. It's **Know-Thyself**
+(KT). The tool. The harness. The thing any agent plugs into.
+
+**The dual-output contract:**
+- Wiki: traceable, human-readable, git-tracked journal (META-MIRROR docs)
+- Vector Twin: machine-searchable embeddings for agent querying
+
+The system makes a Wikipedia for itself of its journey, and also makes a
+vectorized twin so it's traceable data in the wiki and searchable data in
+the vector. This is the recursion Casey described: the system is both the
+storyteller and the story's index.
+
+**Key insight:** The O-A-C-G-R loop is the engine, Know-Thyself is the
+named tool, and the dual-output contract is what makes it useful at scale.
+
+**Current bootstrapping status:**
+- Core abstraction: ✅ SKDE-ABSTRACTION.md
+- Named tool spec: ✅ KNOW-THYSELF.md
+- Wiki tree: ✅ wiki/INDEX.md with subdirectories seeded
+- Vector Twin: 🔄 not yet (needs headspace-rs embedding integration)
+- kt CLI: 🔄 not yet (shell/Python CLI TBD)
+- Instance: Colony: ✅ live on 8823
+- Instance: MIDI: ✅ live on 8765-8770
+- Instance: GC: ✅ live (cron)
+
+**This journal entry is itself proof of the system:**
+We named and documented the abstraction while running it.
+The colony server is still live on 8823, serving requests.
+The MIDI pipeline is still running.
+The GC cron is still collecting metrics.
+Know-Thyself is already true.
 
 ## The Mirror-Making Process
 
